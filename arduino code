@@ -1,1 +1,45 @@
+#include <DHT.h>
+#define DHTPIN 2
+#define DHTTYPE DHT11
 
+DHT dht(DHTPIN, DHTTYPE);
+
+const int enablePin = 9;
+const int in1Pin = 8;
+const int in2Pin = 7;
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+  pinMode(enablePin, OUTPUT);
+  pinMode(in1Pin, OUTPUT);
+  pinMode(in2Pin, OUTPUT);
+}
+
+void loop() {
+  delay(2000); 
+
+  float temperature = dht.readTemperature(); // Celsius
+
+  if (isnan(temperature)) {
+    Serial.println("Failed to read data from DHT sensor!");
+    return;
+  }
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" °C");
+
+  if (temperature <= 25) {
+    analogWrite(enablePin, 153); // 255 * 3 / 5
+    digitalWrite(in1Pin, HIGH);
+    digitalWrite(in2Pin, LOW);
+  } else if (temperature > 25 && temperature <= 40) { 
+    analogWrite(enablePin, 153); // 255 * 3 / 5
+    digitalWrite(in1Pin, HIGH);
+    digitalWrite(in2Pin, HIGH); 
+  } else {
+    analogWrite(enablePin, 255);
+    digitalWrite(in1Pin, HIGH);
+    digitalWrite(in2Pin, LOW);
+  }
+}
